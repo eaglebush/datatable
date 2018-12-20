@@ -141,11 +141,22 @@ func (dt *DataTable) resizeCells() {
 }
 
 //GetValue - get row cell value
-func (rw *Row) GetValue(name string) interface{} {
-	name = strings.ToLower(name)
-	for _, c := range rw.Cells {
-		if strings.ToLower(c.ColumnName) == name {
-			return c.Value
+func (rw *Row) GetValue(index interface{}) interface{} {
+	tname := reflect.TypeOf(index).Name()
+	if tname == "string" {
+		kname := strings.ToLower(tname)
+		for _, c := range rw.Cells {
+			if strings.ToLower(c.ColumnName) == kname {
+				return c.Value
+			}
+		}
+	}
+
+	if tname == "int" {
+		for _, c := range rw.Cells {
+			if c.ColumnIndex == index {
+				return c.Value
+			}
 		}
 	}
 

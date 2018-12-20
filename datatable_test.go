@@ -86,7 +86,8 @@ func TestRowGetValue(t *testing.T) {
 		log.Printf("Row %d: ", i)
 
 		for _, co := range rw.Cells {
-			log.Printf("Column %s: %v, RowIndex: %d, ColumnIndex %d", co.ColumnName, rw.GetValue(co.ColumnName), co.RowIndex, co.ColumnIndex)
+			//log.Printf("Column %s: %v, RowIndex: %d, ColumnIndex %d", co.ColumnName, rw.GetValue(co.ColumnName), co.RowIndex, co.ColumnIndex)
+			log.Printf("Column %s: %v, RowIndex: %d, ColumnIndex %d", co.ColumnName, rw.GetValue(co.ColumnIndex), co.RowIndex, co.ColumnIndex)
 		}
 		log.Println()
 	}
