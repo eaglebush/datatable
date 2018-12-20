@@ -41,6 +41,6 @@ func (dt *DataTable) AddColumn(Name string, Type type, Length int) {
 
 }
 
-function (dt *.DataTable) AddColumnRange (Columns []Column) {
-	
+func (dt *.DataTable) AddColumnRange (Columns []Column) {
+
 }
