@@ -94,11 +94,12 @@ func (dt *DataTable) AddRow(row Row) {
 	copy(r.Cells, row.Cells)
 
 	/* Adjust row index */
-	for _, c := range r.Cells {
-		c.RowIndex = idx
+	for i := range r.Cells {
+		r.Cells[i].RowIndex = idx
+		r.Cells[i].ColumnIndex = i
 	}
 
-	dt.Rows = append(dt.Rows, row)
+	dt.Rows = append(dt.Rows, r)
 	dt.RowCount = len(dt.Rows)
 }
 
