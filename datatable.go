@@ -20,6 +20,7 @@ type Row struct {
 
 //Cell - a location for the value
 type Cell struct {
+	ColumnName  string
 	ColumnIndex int
 	RowIndex    int
 	Value       interface{}
@@ -47,8 +48,9 @@ func NewDataTable(Name string) *DataTable {
 //AddColumn - add a new column to the data table
 func (dt *DataTable) AddColumn(name string, vartype reflect.Type, length int) {
 	exists := false
+	name = strings.ToLower(name)
 	for _, col := range dt.Columns {
-		if strings.ToLower(col.Name) == strings.ToLower(name) {
+		if strings.ToLower(col.Name) == name {
 			exists = true
 			break
 		}
@@ -58,6 +60,7 @@ func (dt *DataTable) AddColumn(name string, vartype reflect.Type, length int) {
 		col := Column{Name: name, Type: vartype, Length: length}
 		dt.Columns = append(dt.Columns, col)
 		dt.resizeCells()
+		dt.ColumnCount = len(dt.Columns)
 	}
 }
 
@@ -79,40 +82,55 @@ func (dt *DataTable) AddColumns(newcolumns []Column) {
 			dt.resizeCells()
 		}
 	}
+	dt.ColumnCount = len(dt.Columns)
 }
 
 // AddRow - add a row to the current rows
 func (dt *DataTable) AddRow(row Row) {
-	idx := len(dt.Rows) + 1
+	idx := len(dt.Rows)
 
 	var r Row
 	r.ColumnCount = row.ColumnCount
-	r.Cells = make([]Cell, r.ColumnCount)
+	r.Cells = append(r.Cells, row.Cells...)
 
 	/* Adjust row index */
-	for i, c := range row.Cells {
+	for i := range row.Cells {
 		r.Cells[i].RowIndex = idx
 		r.Cells[i].ColumnIndex = i
-		r.Cells[i].Value = c.Value
 	}
 
 	dt.Rows = append(dt.Rows, r)
-	dt.RowCount = idx
+	dt.RowCount = len(dt.Rows)
 }
 
 // AddRows - adds a range of rows to the current data table
 func (dt *DataTable) AddRows(rows []Row) {
-	for _, r := range rows {
-		dt.AddRow(r)
+	lastcnt := dt.RowCount
+	cnt := len(rows)
+	combcnt := lastcnt + cnt
+
+	dt.Rows = append(dt.Rows, rows...)
+	for f := lastcnt; f < combcnt; f++ {
+		for g := 0; g < dt.ColumnCount; g++ {
+			dt.Rows[f].Cells[g].RowIndex = f
+			dt.Rows[f].Cells[g].ColumnIndex = g
+		}
 	}
+	dt.RowCount = combcnt
+	rows = nil
 }
 
 // NewRow - returns a new row based on column structure
 func (dt *DataTable) NewRow() Row {
-	return Row{Cells: make([]Cell, len(dt.Columns)), ColumnCount: len(dt.Columns)}
+	r := Row{Cells: make([]Cell, len(dt.Columns)), ColumnCount: len(dt.Columns)}
+	for i, cl := range dt.Columns {
+		r.Cells[i].ColumnIndex = i
+		r.Cells[i].ColumnName = cl.Name
+	}
+	return r
 }
 
-// resize cells for AddColumn and AddColumns
+// resizeCells for AddColumn and AddColumns
 func (dt *DataTable) resizeCells() {
 	for i, r := range dt.Rows {
 		r.Cells = append(r.Cells, Cell{
@@ -120,4 +138,16 @@ func (dt *DataTable) resizeCells() {
 			RowIndex:    i,
 			Value:       nil})
 	}
+}
+
+//GetValue - get row cell value
+func (rw *Row) GetValue(name string) interface{} {
+	name = strings.ToLower(name)
+	for _, c := range rw.Cells {
+		if strings.ToLower(c.ColumnName) == name {
+			return c.Value
+		}
+	}
+
+	return nil
 }
