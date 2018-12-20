@@ -116,6 +116,7 @@ func (dt *DataTable) NewRow() Row {
 	return Row{Cells: tmp, ColumnCount: len(tmp)}
 }
 
+// resize cells for AddColumn and AddColumns
 func (dt *DataTable) resizeCells() {
 	for i, r := range dt.Rows {
 		r.Cells = append(r.Cells, Cell{
