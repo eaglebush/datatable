@@ -36,9 +36,6 @@ type DataTable struct {
 
 //NewDataTable - create a new datatable
 func NewDataTable(Name string) *DataTable {
-	//columns = []Column{}
-	//dt.Rows = []Row{}
-
 	dt := &DataTable{}
 	dt.Name = Name
 	dt.ColumnCount = 0
@@ -89,18 +86,18 @@ func (dt *DataTable) AddRow(row Row) {
 	idx := len(dt.Rows) + 1
 
 	var r Row
-	r.ColumnCount = len(row.Cells)
+	r.ColumnCount = row.ColumnCount
 	r.Cells = make([]Cell, r.ColumnCount)
-	copy(r.Cells, row.Cells)
 
 	/* Adjust row index */
-	for i := range r.Cells {
+	for i, c := range row.Cells {
 		r.Cells[i].RowIndex = idx
 		r.Cells[i].ColumnIndex = i
+		r.Cells[i].Value = c.Value
 	}
 
 	dt.Rows = append(dt.Rows, r)
-	dt.RowCount = len(dt.Rows)
+	dt.RowCount = idx
 }
 
 // AddRows - adds a range of rows to the current data table
@@ -112,9 +109,7 @@ func (dt *DataTable) AddRows(rows []Row) {
 
 // NewRow - returns a new row based on column structure
 func (dt *DataTable) NewRow() Row {
-	tmp := make([]Cell, len(dt.Columns)) /* Create cells */
-
-	return Row{Cells: tmp, ColumnCount: len(tmp)}
+	return Row{Cells: make([]Cell, len(dt.Columns)), ColumnCount: len(dt.Columns)}
 }
 
 // resize cells for AddColumn and AddColumns
