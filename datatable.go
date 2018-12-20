@@ -38,5 +38,9 @@ func (dt *DataTable) NewDataTable(Name string) DataTable {
 }
 
 func (dt *DataTable) AddColumn(Name string, Type type, Length int) {
+
+}
+
+function (dt *.DataTable) AddColumnRange (Columns []Column) {
 	
 }
