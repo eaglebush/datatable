@@ -41,3 +41,7 @@ func TestRowAdding(t *testing.T) {
 		log.Println()
 	}
 }
+
+func TestRowAddingRange(t *testing.T) {
+
+}
