@@ -140,8 +140,8 @@ func (dt *DataTable) resizeCells() {
 	}
 }
 
-//GetValue - get row cell value
-func (rw *Row) GetValue(index interface{}) interface{} {
+//Value - get row cell value
+func (rw *Row) Value(index interface{}) interface{} {
 	tname := reflect.TypeOf(index).Name()
 	if tname == "string" {
 		kname := strings.ToLower(tname)
