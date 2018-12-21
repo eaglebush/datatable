@@ -9,7 +9,7 @@ import (
 type Column struct {
 	Name   string
 	Type   reflect.Type
-	Length int
+	Length int64
 }
 
 //Row - a row in the data table
@@ -46,7 +46,7 @@ func NewDataTable(Name string) *DataTable {
 }
 
 //AddColumn - add a new column to the data table
-func (dt *DataTable) AddColumn(name string, vartype reflect.Type, length int) {
+func (dt *DataTable) AddColumn(name string, vartype reflect.Type, length int64) {
 	exists := false
 	name = strings.ToLower(name)
 	for _, col := range dt.Columns {
@@ -141,13 +141,13 @@ func (dt *DataTable) resizeCells() {
 }
 
 //Value - get row cell values
-func (rw *Row) Value(index interface{}) *interface{} {
+func (rw *Row) Value(index interface{}) interface{} {
 	tname := reflect.TypeOf(index).Name()
 	if tname == "string" {
 		kname := strings.ToLower(index.(string))
 		for _, c := range rw.Cells {
 			if strings.ToLower(c.ColumnName) == kname {
-				return &c.Value
+				return c.Value
 			}
 		}
 	}
@@ -155,7 +155,7 @@ func (rw *Row) Value(index interface{}) *interface{} {
 	if tname == "int" {
 		for _, c := range rw.Cells {
 			if c.ColumnIndex == index {
-				return &c.Value
+				return c.Value
 			}
 		}
 	}
