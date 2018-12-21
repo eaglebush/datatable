@@ -140,7 +140,7 @@ func (dt *DataTable) resizeCells() {
 	}
 }
 
-//Value - get row cell value
+//Value - get row cell values
 func (rw *Row) Value(index interface{}) *interface{} {
 	tname := reflect.TypeOf(index).Name()
 	if tname == "string" {
