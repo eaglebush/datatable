@@ -3,6 +3,7 @@ package datatable
 import (
 	"reflect"
 	"strings"
+	"time"
 )
 
 //Column - a column in the data table
@@ -143,22 +144,144 @@ func (dt *DataTable) resizeCells() {
 //Value - get row cell values
 func (rw *Row) Value(index interface{}) interface{} {
 	tname := reflect.TypeOf(index).Name()
+
+	idx := -1
+
+	if tname == "int" {
+		idx = index.(int)
+	}
+
 	if tname == "string" {
 		kname := strings.ToLower(index.(string))
-		for _, c := range rw.Cells {
+		for i, c := range rw.Cells {
 			if strings.ToLower(c.ColumnName) == kname {
-				return c.Value
+				idx = i
+				break
 			}
 		}
 	}
 
-	if tname == "int" {
-		for _, c := range rw.Cells {
-			if c.ColumnIndex == index {
-				return c.Value
+	if idx != -1 {
+		c := rw.Cells[idx]
+		if c.Value != nil {
+			v := strings.ToLower(reflect.TypeOf(c.Value).String())
+			switch v {
+			case "[]uint8":
+				return string(c.Value.([]uint8))
 			}
 		}
+		return c.Value
 	}
 
 	return nil
+}
+
+//ValueString - return the value as string or a default empty string if the value is null
+func (rw *Row) ValueString(index interface{}) string {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return ""
+	}
+
+	return ret.(string)
+}
+
+//ValueTime - return the value as time.Time or a default empty time.Time if the value is null
+func (rw *Row) ValueTime(index interface{}) time.Time {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return time.Time{}
+	}
+
+	return ret.(time.Time)
+}
+
+//ValueBool - return the value as boolean or a false if the value is null
+func (rw *Row) ValueBool(index interface{}) bool {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return false
+	}
+
+	return ret.(bool)
+}
+
+//ValueFloat64 - return the value as float64 or a 0 if the value is null
+func (rw *Row) ValueFloat64(index interface{}) float64 {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(float64)
+}
+
+//ValueFloat32 - return the value as float32 or a 0 if the value is null
+func (rw *Row) ValueFloat32(index interface{}) float32 {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(float32)
+}
+
+//ValueInt - return the value as int or a 0 if the value is null
+func (rw *Row) ValueInt(index interface{}) int {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(int)
+}
+
+//ValueInt16 - return the value as int16 or a 0 if the value is null
+func (rw *Row) ValueInt16(index interface{}) int16 {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(int16)
+}
+
+//ValueInt32 - return the value as int32 or a 0 if the value is null
+func (rw *Row) ValueInt32(index interface{}) int32 {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(int32)
+}
+
+//ValueInt64 - return the value as int64 or a 0 if the value is null
+func (rw *Row) ValueInt64(index interface{}) int64 {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(int64)
+}
+
+//ValueByte - return the value as byte or a 0 if the value is null
+func (rw *Row) ValueByte(index interface{}) byte {
+	ret := rw.Value(index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(byte)
 }

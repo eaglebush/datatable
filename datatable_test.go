@@ -36,11 +36,12 @@ func TestRowAdding(t *testing.T) {
 
 	log.Printf("Table Name: %s\r\n", dt.Name)
 	for i, rw := range dt.Rows {
+
 		log.Printf("Row %d : ", i)
 		for j, co := range rw.Cells {
 			log.Printf("Column %s: %v, RowIndex: %d, ColumnIndex %d", dt.Columns[j].Name, co.Value, co.RowIndex, co.ColumnIndex)
 		}
-		log.Println()
+		log.Printf("\r\n")
 	}
 }
 
