@@ -176,6 +176,477 @@ func (rw *Row) Value(index interface{}) interface{} {
 	return nil
 }
 
+//SetValue - sets a variable with a value from the row specified by an index
+func (rw *Row) SetValue(Variable interface{}, FieldIndex interface{}) {
+	fv := rw.Value(FieldIndex)
+
+	varbl := reflect.ValueOf(Variable).Elem() //Get the reflection value of the Variable to set value later
+
+	switch varbl.Kind() {
+	case reflect.Int:
+		setIntValue(varbl, fv)
+	case reflect.Int8:
+		setInt8Value(varbl, fv)
+	case reflect.Int16:
+		setInt16Value(varbl, fv)
+	case reflect.Int32:
+		setInt32Value(varbl, fv)
+	case reflect.Int64:
+		setInt64Value(varbl, fv)
+	case reflect.Uint:
+		setUIntValue(varbl, fv)
+	case reflect.Uint8:
+		setUInt8Value(varbl, fv)
+	case reflect.Uint16:
+		setUInt16Value(varbl, fv)
+	case reflect.Uint32:
+		setUInt32Value(varbl, fv)
+	case reflect.Uint64:
+		setUInt64Value(varbl, fv)
+	case reflect.Float32:
+		setFloat32Value(varbl, fv)
+	case reflect.Float64:
+		setFloat64Value(varbl, fv)
+	case reflect.Bool:
+		b := fv.(bool)
+		c := reflect.ValueOf(b)
+		varbl.Set(c)
+	case reflect.String:
+		b := fv.(string)
+		c := reflect.ValueOf(b)
+		varbl.Set(c)
+	}
+	/*
+		switch v.Interface().(type) {
+		case int:
+			setIntValue(v, fv)
+		default:
+
+		}
+	*/
+
+}
+
+func setIntValue(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b int
+
+	switch fval.Kind() {
+	case reflect.Int:
+		b = value.(int)
+	case reflect.Int8:
+		b = int(value.(int8))
+	case reflect.Int16:
+		b = int(value.(int16))
+	case reflect.Int32:
+		b = int(value.(int32))
+	case reflect.Int64:
+		b = int(value.(int64))
+	case reflect.Uint:
+		b = int(value.(uint))
+	case reflect.Uint8:
+		b = int(value.(uint8))
+	case reflect.Uint16:
+		b = int(value.(uint16))
+	case reflect.Uint32:
+		b = int(value.(uint32))
+	case reflect.Uint64:
+		b = int(value.(uint64))
+	case reflect.Float32:
+		b = int(value.(float32))
+	case reflect.Float64:
+		b = int(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setInt8Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b int8
+
+	switch fval.Kind() {
+	case reflect.Int8:
+		b = value.(int8)
+	case reflect.Int:
+		b = int8(value.(int))
+	case reflect.Int16:
+		b = int8(value.(int16))
+	case reflect.Int32:
+		b = int8(value.(int32))
+	case reflect.Int64:
+		b = int8(value.(int64))
+	case reflect.Uint:
+		b = int8(value.(uint))
+	case reflect.Uint8:
+		b = int8(value.(uint8))
+	case reflect.Uint16:
+		b = int8(value.(uint16))
+	case reflect.Uint32:
+		b = int8(value.(uint32))
+	case reflect.Uint64:
+		b = int8(value.(uint64))
+	case reflect.Float32:
+		b = int8(value.(float32))
+	case reflect.Float64:
+		b = int8(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setInt16Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b int16
+
+	switch fval.Kind() {
+	case reflect.Int16:
+		b = value.(int16)
+	case reflect.Int:
+		b = int16(value.(int))
+	case reflect.Int8:
+		b = int16(value.(int8))
+	case reflect.Int32:
+		b = int16(value.(int32))
+	case reflect.Int64:
+		b = int16(value.(int64))
+	case reflect.Uint:
+		b = int16(value.(uint))
+	case reflect.Uint8:
+		b = int16(value.(uint8))
+	case reflect.Uint16:
+		b = int16(value.(uint16))
+	case reflect.Uint32:
+		b = int16(value.(uint32))
+	case reflect.Uint64:
+		b = int16(value.(uint64))
+	case reflect.Float32:
+		b = int16(value.(uint32))
+	case reflect.Float64:
+		b = int16(value.(uint64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setInt32Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b int32
+
+	switch fval.Kind() {
+	case reflect.Int32:
+		b = value.(int32)
+	case reflect.Int:
+		b = int32(value.(int))
+	case reflect.Int8:
+		b = int32(value.(int8))
+	case reflect.Int16:
+		b = int32(value.(int16))
+	case reflect.Int64:
+		b = int32(value.(int64))
+	case reflect.Uint:
+		b = int32(value.(uint))
+	case reflect.Uint8:
+		b = int32(value.(uint8))
+	case reflect.Uint16:
+		b = int32(value.(uint16))
+	case reflect.Uint32:
+		b = int32(value.(uint32))
+	case reflect.Uint64:
+		b = int32(value.(uint64))
+	case reflect.Float32:
+		b = int32(value.(float32))
+	case reflect.Float64:
+		b = int32(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setInt64Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b int64
+
+	switch fval.Kind() {
+	case reflect.Int64:
+		b = value.(int64)
+	case reflect.Int:
+		b = int64(value.(int))
+	case reflect.Int8:
+		b = int64(value.(int8))
+	case reflect.Int16:
+		b = int64(value.(int16))
+	case reflect.Int32:
+		b = int64(value.(int32))
+	case reflect.Uint:
+		b = int64(value.(uint))
+	case reflect.Uint8:
+		b = int64(value.(uint8))
+	case reflect.Uint16:
+		b = int64(value.(uint16))
+	case reflect.Uint32:
+		b = int64(value.(uint32))
+	case reflect.Uint64:
+		b = int64(value.(uint64))
+	case reflect.Float32:
+		b = int64(value.(uint32))
+	case reflect.Float64:
+		b = int64(value.(uint64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setUIntValue(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b uint
+
+	switch fval.Kind() {
+	case reflect.Uint:
+		b = value.(uint)
+	case reflect.Int8:
+		b = uint(value.(int8))
+	case reflect.Int16:
+		b = uint(value.(int16))
+	case reflect.Int32:
+		b = uint(value.(int32))
+	case reflect.Int64:
+		b = uint(value.(int64))
+	case reflect.Int:
+		b = uint(value.(int))
+	case reflect.Uint8:
+		b = uint(value.(uint8))
+	case reflect.Uint16:
+		b = uint(value.(uint16))
+	case reflect.Uint32:
+		b = uint(value.(uint32))
+	case reflect.Uint64:
+		b = uint(value.(uint64))
+	case reflect.Float32:
+		b = uint(value.(float32))
+	case reflect.Float64:
+		b = uint(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setUInt8Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b uint8
+
+	switch fval.Kind() {
+	case reflect.Uint8:
+		b = value.(uint8)
+	case reflect.Int:
+		b = uint8(value.(int))
+	case reflect.Int16:
+		b = uint8(value.(int16))
+	case reflect.Int32:
+		b = uint8(value.(int32))
+	case reflect.Int64:
+		b = uint8(value.(int64))
+	case reflect.Uint:
+		b = uint8(value.(uint))
+	case reflect.Int8:
+		b = uint8(value.(int8))
+	case reflect.Uint16:
+		b = uint8(value.(uint16))
+	case reflect.Uint32:
+		b = uint8(value.(uint32))
+	case reflect.Uint64:
+		b = uint8(value.(uint64))
+	case reflect.Float32:
+		b = uint8(value.(float32))
+	case reflect.Float64:
+		b = uint8(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setUInt16Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b uint16
+
+	switch fval.Kind() {
+	case reflect.Uint16:
+		b = value.(uint16)
+	case reflect.Int:
+		b = uint16(value.(int))
+	case reflect.Int8:
+		b = uint16(value.(int8))
+	case reflect.Int32:
+		b = uint16(value.(int32))
+	case reflect.Int64:
+		b = uint16(value.(int64))
+	case reflect.Uint:
+		b = uint16(value.(uint))
+	case reflect.Uint8:
+		b = uint16(value.(uint8))
+	case reflect.Int16:
+		b = uint16(value.(int16))
+	case reflect.Uint32:
+		b = uint16(value.(uint32))
+	case reflect.Uint64:
+		b = uint16(value.(uint64))
+	case reflect.Float32:
+		b = uint16(value.(float32))
+	case reflect.Float64:
+		b = uint16(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setUInt32Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b uint32
+
+	switch fval.Kind() {
+	case reflect.Uint32:
+		b = value.(uint32)
+	case reflect.Int:
+		b = uint32(value.(int))
+	case reflect.Int8:
+		b = uint32(value.(int8))
+	case reflect.Int16:
+		b = uint32(value.(int16))
+	case reflect.Int64:
+		b = uint32(value.(int64))
+	case reflect.Uint:
+		b = uint32(value.(uint))
+	case reflect.Uint8:
+		b = uint32(value.(uint8))
+	case reflect.Uint16:
+		b = uint32(value.(uint16))
+	case reflect.Int32:
+		b = uint32(value.(int32))
+	case reflect.Uint64:
+		b = uint32(value.(uint64))
+	case reflect.Float32:
+		b = uint32(value.(float32))
+	case reflect.Float64:
+		b = uint32(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setUInt64Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b uint64
+
+	switch fval.Kind() {
+	case reflect.Uint64:
+		b = value.(uint64)
+	case reflect.Int:
+		b = uint64(value.(int))
+	case reflect.Int8:
+		b = uint64(value.(int8))
+	case reflect.Int16:
+		b = uint64(value.(int16))
+	case reflect.Int32:
+		b = uint64(value.(int32))
+	case reflect.Uint:
+		b = uint64(value.(uint))
+	case reflect.Uint8:
+		b = uint64(value.(uint8))
+	case reflect.Uint16:
+		b = uint64(value.(uint16))
+	case reflect.Uint32:
+		b = uint64(value.(uint32))
+	case reflect.Int64:
+		b = uint64(value.(int64))
+	case reflect.Float32:
+		b = uint64(value.(float32))
+	case reflect.Float64:
+		b = uint64(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setFloat32Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b float32
+
+	switch fval.Kind() {
+	case reflect.Float32:
+		b = value.(float32)
+	case reflect.Int:
+		b = float32(value.(int))
+	case reflect.Int8:
+		b = float32(value.(int8))
+	case reflect.Int16:
+		b = float32(value.(int16))
+	case reflect.Int32:
+		b = float32(value.(int32))
+	case reflect.Uint:
+		b = float32(value.(uint))
+	case reflect.Uint8:
+		b = float32(value.(uint8))
+	case reflect.Uint16:
+		b = float32(value.(uint16))
+	case reflect.Uint32:
+		b = float32(value.(uint32))
+	case reflect.Int64:
+		b = float32(value.(int64))
+	case reflect.Uint64:
+		b = float32(value.(uint64))
+	case reflect.Float64:
+		b = float32(value.(float64))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
+func setFloat64Value(varField reflect.Value, value interface{}) {
+	fval := reflect.ValueOf(value)
+	var b float64
+
+	switch fval.Kind() {
+	case reflect.Float64:
+		b = value.(float64)
+	case reflect.Int:
+		b = float64(value.(int))
+	case reflect.Int8:
+		b = float64(value.(int8))
+	case reflect.Int16:
+		b = float64(value.(int16))
+	case reflect.Int32:
+		b = float64(value.(int32))
+	case reflect.Uint:
+		b = float64(value.(uint))
+	case reflect.Uint8:
+		b = float64(value.(uint8))
+	case reflect.Uint16:
+		b = float64(value.(uint16))
+	case reflect.Uint32:
+		b = float64(value.(uint32))
+	case reflect.Int64:
+		b = float64(value.(int64))
+	case reflect.Uint64:
+		b = float64(value.(uint64))
+	case reflect.Float32:
+		b = float64(value.(float32))
+	}
+
+	c := reflect.ValueOf(b)
+	varField.Set(c)
+}
+
 //ValueString - return the value as string or a default empty string if the value is null
 func (rw *Row) ValueString(index interface{}) string {
 	ret := rw.Value(index)
