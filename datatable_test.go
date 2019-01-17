@@ -141,6 +141,10 @@ func TestRowAddingRange(t *testing.T) {
 	}
 }
 
+func TestRowSetValue(t *testing.T) {
+
+}
+
 func BenchmarkBulkRowAdding(b *testing.B) {
 	dt := NewDataTable("Simon")
 
