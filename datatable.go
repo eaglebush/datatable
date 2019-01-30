@@ -84,43 +84,62 @@ func (dt *DataTable) AddColumns(newcolumns []Column) {
 }
 
 // AddRow - add a row to the current rows
+/*
 func (dt *DataTable) AddRow(row Row) {
-	idx := len(dt.Rows)
+	var r Row
+	r.ColumnCount = row.ColumnCount
+	r.Cells = append(r.Cells, row.Cells...)
 
+	// Adjust row index
+	for i := range row.Cells {
+		r.Cells[i].RowIndex = dt.RowCount
+		r.Cells[i].ColumnIndex = i
+	}
+
+	dt.Rows = append(dt.Rows, r)
+	dt.RowCount = dt.RowCount + 1
+	//log.Println(dt.RowCount)
+}
+*/
+
+// AddRow - add a row to the current rows
+func (dt *DataTable) AddRow(row *Row) {
 	var r Row
 	r.ColumnCount = row.ColumnCount
 	r.Cells = append(r.Cells, row.Cells...)
 
 	/* Adjust row index */
 	for i := range row.Cells {
-		r.Cells[i].RowIndex = idx
+		r.Cells[i].RowIndex = dt.RowCount
 		r.Cells[i].ColumnIndex = i
 	}
 
 	dt.Rows = append(dt.Rows, r)
-	dt.RowCount = len(dt.Rows)
+	dt.RowCount = dt.RowCount + 1
+	//log.Println(dt.RowCount)
 }
 
 // AddRows - adds a range of rows to the current data table
 func (dt *DataTable) AddRows(rows []Row) {
 	lastcnt := dt.RowCount
 	cnt := len(rows)
-	combcnt := lastcnt + cnt
-
+	dt.RowCount = lastcnt + cnt
 	dt.Rows = append(dt.Rows, rows...)
-	for f := lastcnt; f < combcnt; f++ {
+
+	for f := lastcnt; f < dt.RowCount; f++ {
 		for g := 0; g < dt.ColumnCount; g++ {
 			dt.Rows[f].Cells[g].RowIndex = f
 			dt.Rows[f].Cells[g].ColumnIndex = g
 		}
 	}
-	dt.RowCount = combcnt
+
 	rows = nil
 }
 
 // NewRow - returns a new row based on column structure
 func (dt *DataTable) NewRow() Row {
-	r := Row{Cells: make([]Cell, len(dt.Columns)), ColumnCount: len(dt.Columns)}
+	colcnt := len(dt.Columns)
+	r := Row{Cells: make([]Cell, colcnt), ColumnCount: colcnt}
 	for i, cl := range dt.Columns {
 		r.Cells[i].ColumnIndex = i
 		r.Cells[i].ColumnName = cl.Name

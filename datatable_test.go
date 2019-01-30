@@ -20,19 +20,19 @@ func TestRowAdding(t *testing.T) {
 	r.Cells[0].Value = 1
 	r.Cells[1].Value = "Test1"
 	r.Cells[2].Value = "Test1 Name"
-	dt.AddRow(r)
+	dt.AddRow(&r)
 
 	r = dt.NewRow()
 	r.Cells[0].Value = 2
 	r.Cells[1].Value = "Test2"
 	r.Cells[2].Value = "Test2 Name"
-	dt.AddRow(r)
+	dt.AddRow(&r)
 
 	r = dt.NewRow()
 	r.Cells[0].Value = 3
 	r.Cells[1].Value = "Test3"
 	r.Cells[2].Value = "Test3 Name"
-	dt.AddRow(r)
+	dt.AddRow(&r)
 
 	log.Printf("Table Name: %s\r\n", dt.Name)
 	for i, rw := range dt.Rows {
@@ -61,7 +61,7 @@ func TestRowGetValue(t *testing.T) {
 	r.Cells[0].Value = 0
 	r.Cells[1].Value = "Test0"
 	r.Cells[2].Value = "Test0 Name"
-	dt.AddRow(r)
+	dt.AddRow(&r)
 
 	r = dt.NewRow()
 	r.Cells[0].Value = 1
@@ -110,7 +110,7 @@ func TestRowAddingRange(t *testing.T) {
 	r.Cells[0].Value = 0
 	r.Cells[1].Value = "Test0"
 	r.Cells[2].Value = "Test0 Name"
-	dt.AddRow(r)
+	dt.AddRow(&r)
 
 	r = dt.NewRow()
 	r.Cells[0].Value = 1
@@ -161,7 +161,7 @@ func BenchmarkBulkRowAdding(b *testing.B) {
 		r.Cells[0].Value = i
 		r.Cells[1].Value = "Test" + strconv.Itoa(i)
 		r.Cells[2].Value = "Test" + strconv.Itoa(i) + " Name"
-		dt.AddRow(r)
+		dt.AddRow(&r)
 	}
 
 	log.Printf("Table Name: %s, RowCount %d\r\n", dt.Name, dt.RowCount)
