@@ -10,9 +10,9 @@ import (
 func TestRowAdding(t *testing.T) {
 	dt := NewDataTable("Simon")
 
-	dt.AddColumn("ID", reflect.TypeOf(0), 0)
-	dt.AddColumn("Code", reflect.TypeOf(""), 12)
-	dt.AddColumn("Name", reflect.TypeOf(""), 15)
+	dt.AddColumn("ID", reflect.TypeOf(0), 0, "")
+	dt.AddColumn("Code", reflect.TypeOf(""), 12, "")
+	dt.AddColumn("Name", reflect.TypeOf(""), 15, "")
 
 	var r Row
 

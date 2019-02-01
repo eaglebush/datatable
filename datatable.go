@@ -1,7 +1,9 @@
 package datatable
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -12,6 +14,7 @@ import (
 type Column struct {
 	Name   string
 	Type   reflect.Type
+	DBType string
 	Length int64
 }
 
@@ -19,14 +22,19 @@ type Column struct {
 type Row struct {
 	Cells       []Cell
 	ColumnCount int
+	sqlRows     *sql.Rows //Pointer to internal sql.Rows as a result from GetDataReader() call
+	tmpRows     []interface{}
+	cellsInited bool          //internal variable for Next() as a result from GetDataReader() call
+	ResultRows  []interface{} //raw variable to as a result for calling Next() in a GetDataReader() call
 }
 
 //Cell - a location for the value
 type Cell struct {
-	ColumnName  string
-	ColumnIndex int
-	RowIndex    int
-	Value       interface{}
+	ColumnName   string
+	ColumnIndex  int
+	RowIndex     int
+	DBColumnType string
+	Value        interface{}
 }
 
 //DataTable - the object
@@ -44,7 +52,7 @@ func NewDataTable(Name string) *DataTable {
 }
 
 //AddColumn - add a new column to the data table
-func (dt *DataTable) AddColumn(name string, vartype reflect.Type, length int64) {
+func (dt *DataTable) AddColumn(name string, vartype reflect.Type, length int64, DBType string) {
 	exists := false
 	name = strings.ToLower(name)
 	for _, col := range dt.Columns {
@@ -55,7 +63,7 @@ func (dt *DataTable) AddColumn(name string, vartype reflect.Type, length int64) 
 	}
 
 	if !exists {
-		col := Column{Name: name, Type: vartype, Length: length}
+		col := Column{Name: name, Type: vartype, Length: length, DBType: DBType}
 		dt.Columns = append(dt.Columns, col)
 		dt.resizeCells()
 		dt.ColumnCount = len(dt.Columns)
@@ -154,6 +162,81 @@ func (dt *DataTable) resizeCells() {
 			ColumnIndex: len(dt.Columns) - 1,
 			RowIndex:    i,
 			Value:       nil})
+	}
+}
+
+//SetSQLRow - sets a pointer to an sql.Row object to allow next row reading
+func (rw *Row) SetSQLRow(rows *sql.Rows) {
+	rw.sqlRows = rows
+}
+
+//Next - gets the next row from a GetDataReader function call
+func (rw *Row) Next() bool {
+	if rw.sqlRows == nil {
+		return false
+	}
+
+	if !rw.sqlRows.Next() {
+		return false
+	}
+
+	//colcnt := len(cols)
+
+	if !rw.cellsInited {
+		cols, _ := rw.sqlRows.Columns()
+		colt, _ := rw.sqlRows.ColumnTypes()
+		colcnt := len(cols)
+
+		rw.ResultRows = make([]interface{}, colcnt)
+		rw.tmpRows = make([]interface{}, colcnt)
+		rw.Cells = make([]Cell, colcnt)
+		rw.ColumnCount = colcnt
+
+		for i := 0; i < len(cols); i++ {
+			rw.Cells[i].ColumnIndex = i
+			rw.Cells[i].ColumnName = cols[i]
+			rw.Cells[i].DBColumnType = colt[i].DatabaseTypeName()
+
+			// Initialize rows
+			rw.ResultRows[i] = new(interface{})
+			rw.tmpRows[i] = new(interface{})
+		}
+
+		rw.cellsInited = true
+	}
+
+	err := rw.sqlRows.Scan(rw.tmpRows...)
+	if err != nil {
+		log.Println("Error Next: " + err.Error())
+		return false
+	}
+
+	for i := 0; i < rw.ColumnCount; i++ {
+		v := rw.tmpRows[i].(*interface{})
+		if *v != nil {
+			switch rw.Cells[i].DBColumnType {
+			case "DECIMAL":
+				f, _ := strconv.ParseFloat(string((*v).([]uint8)), 64)
+				rw.ResultRows[i] = &f
+				rw.Cells[i].Value = f
+			default:
+				rw.Cells[i].Value = *v
+				rw.ResultRows[i] = v
+			}
+		} else {
+			rw.Cells[i].Value = nil
+		}
+	}
+
+	return true
+}
+
+//Close - closes sqlRow from a GetDataReader function call
+func (rw *Row) Close() {
+	rw.cellsInited = false
+	rw.ResultRows = rw.ResultRows[:0]
+	if rw.sqlRows != nil {
+		rw.sqlRows.Close()
 	}
 }
 
