@@ -271,6 +271,7 @@ func (rw *Row) Value(index interface{}) interface{} {
 			for i, c := range rw.Cells {
 				if strings.ToLower(c.ColumnName) == kname {
 					idx = i
+					rw.currentColumnNamesIndex[kname] = i
 					break
 				}
 			}
@@ -320,6 +321,7 @@ func (rw *Row) ValueByName(index *string) interface{} {
 		for i := range rw.Cells {
 			if strings.ToLower(rw.Cells[i].ColumnName) == kname {
 				idx = i
+				rw.currentColumnNamesIndex[kname] = i
 				break
 			}
 		}
