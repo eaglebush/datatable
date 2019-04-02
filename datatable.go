@@ -20,12 +20,13 @@ type Column struct {
 
 //Row - a row in the data table
 type Row struct {
-	Cells       []Cell
-	ColumnCount int
-	sqlRows     *sql.Rows //Pointer to internal sql.Rows as a result from GetDataReader() call
-	tmpRows     []interface{}
-	cellsInited bool          //internal variable for Next() as a result from GetDataReader() call
-	ResultRows  []interface{} //raw variable to as a result for calling Next() in a GetDataReader() call
+	Cells                   []Cell
+	ColumnCount             int
+	sqlRows                 *sql.Rows //Pointer to internal sql.Rows as a result from GetDataReader() call
+	tmpRows                 []interface{}
+	cellsInited             bool          //internal variable for Next() as a result from GetDataReader() call
+	ResultRows              []interface{} //raw variable to as a result for calling Next() in a GetDataReader() call
+	currentColumnNamesIndex map[string]int
 }
 
 //Cell - a location for the value
@@ -115,11 +116,14 @@ func (dt *DataTable) AddRow(row *Row) {
 	var r Row
 	r.ColumnCount = row.ColumnCount
 	r.Cells = append(r.Cells, row.Cells...)
+	r.currentColumnNamesIndex = make(map[string]int)
 
 	/* Adjust row index */
 	for i := range row.Cells {
 		r.Cells[i].RowIndex = dt.RowCount
 		r.Cells[i].ColumnIndex = i
+		r.Cells[i].ColumnName = row.Cells[i].ColumnName
+		r.currentColumnNamesIndex[strings.ToLower(row.Cells[i].ColumnName)] = i
 	}
 
 	dt.Rows = append(dt.Rows, r)
@@ -148,9 +152,12 @@ func (dt *DataTable) AddRows(rows []Row) {
 func (dt *DataTable) NewRow() Row {
 	colcnt := len(dt.Columns)
 	r := Row{Cells: make([]Cell, colcnt), ColumnCount: colcnt}
+	r.currentColumnNamesIndex = make(map[string]int)
+
 	for i, cl := range dt.Columns {
 		r.Cells[i].ColumnIndex = i
 		r.Cells[i].ColumnName = cl.Name
+		r.currentColumnNamesIndex[strings.ToLower(cl.Name)] = i
 	}
 	return r
 }
@@ -183,6 +190,8 @@ func (rw *Row) Next() bool {
 	//colcnt := len(cols)
 
 	if !rw.cellsInited {
+		rw.currentColumnNamesIndex = make(map[string]int)
+
 		cols, _ := rw.sqlRows.Columns()
 		colt, _ := rw.sqlRows.ColumnTypes()
 		colcnt := len(cols)
@@ -196,6 +205,8 @@ func (rw *Row) Next() bool {
 			rw.Cells[i].ColumnIndex = i
 			rw.Cells[i].ColumnName = cols[i]
 			rw.Cells[i].DBColumnType = colt[i].DatabaseTypeName()
+
+			rw.currentColumnNamesIndex[strings.ToLower(cols[i])] = i
 
 			// Initialize rows
 			rw.ResultRows[i] = new(interface{})
@@ -211,7 +222,8 @@ func (rw *Row) Next() bool {
 		return false
 	}
 
-	for i := 0; i < rw.ColumnCount; i++ {
+	ccnt := rw.ColumnCount
+	for i := 0; i < ccnt; i++ {
 		v := rw.tmpRows[i].(*interface{})
 		if *v != nil {
 			switch rw.Cells[i].DBColumnType {
@@ -251,11 +263,16 @@ func (rw *Row) Value(index interface{}) interface{} {
 	}
 
 	if tname == "string" {
-		kname := strings.ToLower(index.(string))
-		for i, c := range rw.Cells {
-			if strings.ToLower(c.ColumnName) == kname {
-				idx = i
-				break
+		var ok bool
+		idx, ok = rw.currentColumnNamesIndex[index.(string)]
+		if !ok {
+			idx = -1
+			kname := strings.ToLower(index.(string))
+			for i, c := range rw.Cells {
+				if strings.ToLower(c.ColumnName) == kname {
+					idx = i
+					break
+				}
 			}
 		}
 	}
@@ -275,10 +292,57 @@ func (rw *Row) Value(index interface{}) interface{} {
 	return nil
 }
 
-//SetValue - sets a variable with a value from the row specified by an index
-func (rw *Row) SetValue(Variable interface{}, FieldIndex interface{}) {
+// ValueByOrdinal - get values by ordinal index
+func (rw *Row) ValueByOrdinal(index *int) interface{} {
+	if *index > len(rw.Cells) {
+		return nil
+	}
+	c := rw.Cells[*index]
+	if c.Value != nil {
+		v := strings.ToLower(reflect.TypeOf(c.Value).String())
+		switch v {
+		case "[]uint8":
+			return string(c.Value.([]uint8))
+		}
+	}
+	return c.Value
+}
 
-	fv := rw.Value(FieldIndex)
+// ValueByName - get values by column name index
+func (rw *Row) ValueByName(index *string) interface{} {
+	idx := -1
+
+	kname := strings.ToLower(*index)
+	var ok bool
+	idx, ok = rw.currentColumnNamesIndex[kname]
+	if !ok {
+		idx = -1
+		for i := range rw.Cells {
+			if strings.ToLower(rw.Cells[i].ColumnName) == kname {
+				idx = i
+				break
+			}
+		}
+	}
+
+	if idx == -1 {
+		return nil
+	}
+
+	c := rw.Cells[idx]
+	if c.Value != nil {
+		v := strings.ToLower(reflect.TypeOf(c.Value).String())
+		switch v {
+		case "[]uint8":
+			return string(c.Value.([]uint8))
+		}
+	}
+	return c.Value
+}
+
+//SetValueByOrd - sets a variable with a value from the row specified by an index ordinal
+func (rw *Row) SetValueByOrd(Variable interface{}, FieldIndex int) {
+	fv := rw.ValueByOrdinal(&FieldIndex)
 	varbl := reflect.ValueOf(Variable).Elem() //Get the reflection value of the Variable to set value later
 	v := varbl.Interface()                    //convert back to interface type to allow type checking
 
@@ -316,6 +380,49 @@ func (rw *Row) SetValue(Variable interface{}, FieldIndex interface{}) {
 	default:
 		fmt.Println(t)
 	}
+}
+
+//SetValue - sets a variable with a value from the row specified by an index
+func (rw *Row) SetValue(Variable interface{}, FieldIndex string) {
+	fv := rw.ValueByName(&FieldIndex)
+	varbl := reflect.ValueOf(Variable).Elem() //Get the reflection value of the Variable to set value later
+	v := varbl.Interface()                    //convert back to interface type to allow type checking
+
+	switch t := v.(type) {
+	case int:
+		setIntValue(varbl, fv)
+	case int8:
+		setInt8Value(varbl, fv)
+	case int16:
+		setInt16Value(varbl, fv)
+	case int32:
+		setInt32Value(varbl, fv)
+	case int64:
+		setInt64Value(varbl, fv)
+	case uint:
+		setUIntValue(varbl, fv)
+	case uint8:
+		setUInt8Value(varbl, fv)
+	case uint16:
+		setUInt16Value(varbl, fv)
+	case uint32:
+		setUInt32Value(varbl, fv)
+	case uint64:
+		setUInt64Value(varbl, fv)
+	case float32:
+		setFloat32Value(varbl, fv)
+	case float64:
+		setFloat64Value(varbl, fv)
+	case bool:
+		setBoolValue(varbl, fv)
+	case string:
+		setStringValue(varbl, fv)
+	case time.Time:
+		setTimeValue(varbl, fv)
+	default:
+		fmt.Println(t)
+	}
+
 }
 
 func setIntValue(varField reflect.Value, value interface{}) {
@@ -870,8 +977,8 @@ func setTimeValue(varField reflect.Value, value interface{}) {
 }
 
 //ValueString - return the value as string or a default empty string if the value is null
-func (rw *Row) ValueString(index interface{}) string {
-	ret := rw.Value(index)
+func (rw *Row) ValueString(index string) string {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return ""
@@ -881,8 +988,8 @@ func (rw *Row) ValueString(index interface{}) string {
 }
 
 //ValueTime - return the value as time.Time or a default empty time.Time if the value is null
-func (rw *Row) ValueTime(index interface{}) time.Time {
-	ret := rw.Value(index)
+func (rw *Row) ValueTime(index string) time.Time {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return time.Time{}
@@ -892,8 +999,8 @@ func (rw *Row) ValueTime(index interface{}) time.Time {
 }
 
 //ValueBool - return the value as boolean or a false if the value is null
-func (rw *Row) ValueBool(index interface{}) bool {
-	ret := rw.Value(index)
+func (rw *Row) ValueBool(index string) bool {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return false
@@ -903,8 +1010,8 @@ func (rw *Row) ValueBool(index interface{}) bool {
 }
 
 //ValueFloat64 - return the value as float64 or a 0 if the value is null
-func (rw *Row) ValueFloat64(index interface{}) float64 {
-	ret := rw.Value(index)
+func (rw *Row) ValueFloat64(index string) float64 {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return 0
@@ -914,8 +1021,8 @@ func (rw *Row) ValueFloat64(index interface{}) float64 {
 }
 
 //ValueFloat32 - return the value as float32 or a 0 if the value is null
-func (rw *Row) ValueFloat32(index interface{}) float32 {
-	ret := rw.Value(index)
+func (rw *Row) ValueFloat32(index string) float32 {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return 0
@@ -925,8 +1032,8 @@ func (rw *Row) ValueFloat32(index interface{}) float32 {
 }
 
 //ValueInt - return the value as int or a 0 if the value is null
-func (rw *Row) ValueInt(index interface{}) int {
-	ret := rw.Value(index)
+func (rw *Row) ValueInt(index string) int {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return 0
@@ -936,8 +1043,8 @@ func (rw *Row) ValueInt(index interface{}) int {
 }
 
 //ValueInt16 - return the value as int16 or a 0 if the value is null
-func (rw *Row) ValueInt16(index interface{}) int16 {
-	ret := rw.Value(index)
+func (rw *Row) ValueInt16(index string) int16 {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return 0
@@ -947,8 +1054,8 @@ func (rw *Row) ValueInt16(index interface{}) int16 {
 }
 
 //ValueInt32 - return the value as int32 or a 0 if the value is null
-func (rw *Row) ValueInt32(index interface{}) int32 {
-	ret := rw.Value(index)
+func (rw *Row) ValueInt32(index string) int32 {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return 0
@@ -958,8 +1065,8 @@ func (rw *Row) ValueInt32(index interface{}) int32 {
 }
 
 //ValueInt64 - return the value as int64 or a 0 if the value is null
-func (rw *Row) ValueInt64(index interface{}) int64 {
-	ret := rw.Value(index)
+func (rw *Row) ValueInt64(index string) int64 {
+	ret := rw.ValueByName(&index)
 
 	if ret == nil {
 		return 0
@@ -969,8 +1076,118 @@ func (rw *Row) ValueInt64(index interface{}) int64 {
 }
 
 //ValueByte - return the value as byte or a 0 if the value is null
-func (rw *Row) ValueByte(index interface{}) byte {
-	ret := rw.Value(index)
+func (rw *Row) ValueByte(index string) byte {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(byte)
+}
+
+//ValueStringOrd - return the value as string or a default empty string if the value is null by ordinal
+func (rw *Row) ValueStringOrd(index int) string {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return ""
+	}
+
+	return ret.(string)
+}
+
+//ValueTimeOrd - return the value as time.Time or a default empty time.Time if the value is null by ordinal
+func (rw *Row) ValueTimeOrd(index int) time.Time {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return time.Time{}
+	}
+
+	return ret.(time.Time)
+}
+
+//ValueBoolOrd - return the value as boolean or a false if the value is null by ordinal
+func (rw *Row) ValueBoolOrd(index int) bool {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return false
+	}
+
+	return ret.(bool)
+}
+
+//ValueFloat64Ord - return the value as float64 or a 0 if the value is null by ordinal
+func (rw *Row) ValueFloat64Ord(index int) float64 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(float64)
+}
+
+//ValueFloat32Ord - return the value as float32 or a 0 if the value is null by ordinal
+func (rw *Row) ValueFloat32Ord(index int) float32 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(float32)
+}
+
+//ValueIntOrd - return the value as int or a 0 if the value is null by ordinal
+func (rw *Row) ValueIntOrd(index int) int {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(int)
+}
+
+//ValueInt16Ord - return the value as int16 or a 0 if the value is null by ordinal
+func (rw *Row) ValueInt16Ord(index int) int16 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(int16)
+}
+
+//ValueInt32Ord - return the value as int32 or a 0 if the value is null by ordinal
+func (rw *Row) ValueInt32Ord(index int) int32 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(int32)
+}
+
+//ValueInt64Ord - return the value as int64 or a 0 if the value is null by ordinal
+func (rw *Row) ValueInt64Ord(index int) int64 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return 0
+	}
+
+	return ret.(int64)
+}
+
+//ValueByteOrd - return the value as byte or a 0 if the value is null by ordinal
+func (rw *Row) ValueByteOrd(index int) byte {
+	ret := rw.ValueByOrdinal(&index)
 
 	if ret == nil {
 		return 0

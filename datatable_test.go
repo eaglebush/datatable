@@ -92,6 +92,26 @@ func TestRowGetValue(t *testing.T) {
 		}
 		log.Println()
 	}
+
+	log.Println("Getting value by column name index: ")
+	for i, rw := range dt.Rows {
+		log.Printf("Row %d: ", i)
+		//log.Printf("Column %s: %v, RowIndex: %d, ColumnIndex %d", co.ColumnName, rw.GetValue(co.ColumnName), co.RowIndex, co.ColumnIndex)
+		log.Printf("Column %s: %v", "Code", rw.ValueString("Code"))
+		log.Printf("Column %s: %v", "Name", rw.ValueString("Name"))
+
+		log.Println()
+	}
+
+	log.Println("Getting value by ordinal index: ")
+	for i, rw := range dt.Rows {
+		log.Printf("Row %d: ", i)
+		//log.Printf("Column %s: %v, RowIndex: %d, ColumnIndex %d", co.ColumnName, rw.GetValue(co.ColumnName), co.RowIndex, co.ColumnIndex)
+		log.Printf("Column %s: %v", "Code", rw.ValueStringOrd(1))
+		log.Printf("Column %s: %v", "Name", rw.ValueStringOrd(2))
+
+		log.Println()
+	}
 }
 
 func TestRowAddingRange(t *testing.T) {
