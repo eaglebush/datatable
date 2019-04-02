@@ -267,10 +267,14 @@ func (rw *Row) Value(index interface{}) interface{} {
 		idx, ok = rw.currentColumnNamesIndex[index.(string)]
 		if !ok {
 			idx = -1
+			if rw.currentColumnNamesIndex == nil {
+				rw.currentColumnNamesIndex = make(map[string]int)
+			}
 			kname := strings.ToLower(index.(string))
 			for i, c := range rw.Cells {
 				if strings.ToLower(c.ColumnName) == kname {
 					idx = i
+
 					rw.currentColumnNamesIndex[kname] = i
 					break
 				}
@@ -317,6 +321,9 @@ func (rw *Row) ValueByName(index *string) interface{} {
 	var ok bool
 	idx, ok = rw.currentColumnNamesIndex[kname]
 	if !ok {
+		if rw.currentColumnNamesIndex == nil {
+			rw.currentColumnNamesIndex = make(map[string]int)
+		}
 		idx = -1
 		for i := range rw.Cells {
 			if strings.ToLower(rw.Cells[i].ColumnName) == kname {
