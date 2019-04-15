@@ -807,6 +807,10 @@ func setFloat32Value(varField reflect.Value, value interface{}) {
 		b = float32(value.(uint64))
 	case float64:
 		b = float32(value.(float64))
+	default:
+		str := value.(string)
+		c, _ := strconv.ParseFloat(str, 32)
+		b = float32(c)
 	}
 
 	c := reflect.ValueOf(b)
@@ -841,6 +845,9 @@ func setFloat64Value(varField reflect.Value, value interface{}) {
 		b = float64(value.(uint64))
 	case float32:
 		b = float64(value.(float32))
+	default:
+		str := value.(string)
+		b, _ = strconv.ParseFloat(str, 64)
 	}
 
 	c := reflect.ValueOf(b)
