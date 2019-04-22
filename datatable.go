@@ -313,7 +313,12 @@ func (rw *Row) ValueByOrdinal(index *int) interface{} {
 		v := strings.ToLower(reflect.TypeOf(c.Value).String())
 		switch v {
 		case "[]uint8":
-			return string(c.Value.([]uint8))
+			switch strings.ToUpper(c.DBColumnType) {
+			case "IMAGE":
+				return c.Value.([]uint8)
+			default:
+				return string(c.Value.([]uint8))
+			}
 		}
 	}
 	return c.Value
@@ -349,7 +354,12 @@ func (rw *Row) ValueByName(index *string) interface{} {
 		v := strings.ToLower(reflect.TypeOf(c.Value).String())
 		switch v {
 		case "[]uint8":
-			return string(c.Value.([]uint8))
+			switch strings.ToUpper(c.DBColumnType) {
+			case "IMAGE":
+				return c.Value.([]uint8)
+			default:
+				return string(c.Value.([]uint8))
+			}
 		}
 	}
 	return c.Value
@@ -392,6 +402,9 @@ func (rw *Row) SetValueByOrd(Variable interface{}, FieldIndex int) {
 		setStringValue(varbl, fv)
 	case time.Time:
 		setTimeValue(varbl, fv)
+	case []uint8:
+		c := reflect.ValueOf(fv)
+		varbl.Set(c)
 	default:
 		fmt.Println(t)
 	}
@@ -434,6 +447,9 @@ func (rw *Row) SetValue(Variable interface{}, FieldIndex string) {
 		setStringValue(varbl, fv)
 	case time.Time:
 		setTimeValue(varbl, fv)
+	case []uint8:
+		c := reflect.ValueOf(fv)
+		varbl.Set(c)
 	default:
 		fmt.Println(t)
 	}
