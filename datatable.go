@@ -122,7 +122,6 @@ func (dt *DataTable) AddRow(row *Row) {
 	for i := range row.Cells {
 		r.Cells[i].RowIndex = dt.RowCount
 		r.Cells[i].ColumnIndex = i
-		r.Cells[i].ColumnName = row.Cells[i].ColumnName
 		r.currentColumnNamesIndex[strings.ToLower(row.Cells[i].ColumnName)] = i
 	}
 
@@ -157,6 +156,7 @@ func (dt *DataTable) NewRow() Row {
 	for i, cl := range dt.Columns {
 		r.Cells[i].ColumnIndex = i
 		r.Cells[i].ColumnName = cl.Name
+		r.Cells[i].DBColumnType = cl.DBType
 		r.currentColumnNamesIndex[strings.ToLower(cl.Name)] = i
 	}
 	return r
