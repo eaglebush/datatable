@@ -286,9 +286,15 @@ func (rw *Row) Value(index interface{}) interface{} {
 		c := rw.Cells[idx]
 		if c.Value != nil {
 			v := strings.ToLower(reflect.TypeOf(c.Value).String())
+
 			switch v {
 			case "[]uint8":
-				return string(c.Value.([]uint8))
+				switch strings.ToUpper(c.DBColumnType) {
+				case "IMAGE":
+					return c.Value.([]uint8)
+				default:
+					return string(c.Value.([]uint8))
+				}
 			}
 		}
 		return c.Value
