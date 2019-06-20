@@ -243,10 +243,14 @@ func (rw *Row) Next() bool {
 	return true
 }
 
-//Close - closes sqlRow from a GetDataReader function call
+//Close - closes sqlRow from a GetDataReader function call. Also resets the values in its cells
 func (rw *Row) Close() {
 	rw.cellsInited = false
 	rw.ResultRows = rw.ResultRows[:0]
+	for i := 0; i < len(rw.Cells); i++ {
+		rw.Cells[i].Value = nil
+	}
+	rw.Cells = rw.Cells[:0]
 	if rw.sqlRows != nil {
 		rw.sqlRows.Close()
 	}
