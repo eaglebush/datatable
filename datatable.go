@@ -369,11 +369,11 @@ func (rw *Row) ValueByName(index *string) interface{} {
 	return c.Value
 }
 
-//SetValueByOrd - sets a variable with a value from the row specified by an index ordinal
-func (rw *Row) SetValueByOrd(Variable interface{}, FieldIndex int) {
+//SetValueByOrd - sets a struct item with a value from the row specified by an index ordinal
+func (rw *Row) SetValueByOrd(StructItem interface{}, FieldIndex int) {
 	fv := rw.ValueByOrdinal(&FieldIndex)
-	varbl := reflect.ValueOf(Variable).Elem() //Get the reflection value of the Variable to set value later
-	v := varbl.Interface()                    //convert back to interface type to allow type checking
+	varbl := reflect.ValueOf(StructItem).Elem() //Get the reflection value of the Variable to set value later
+	v := varbl.Interface()                      //convert back to interface type to allow type checking
 
 	switch t := v.(type) {
 	case int:
@@ -414,11 +414,11 @@ func (rw *Row) SetValueByOrd(Variable interface{}, FieldIndex int) {
 	}
 }
 
-//SetValue - sets a variable with a value from the row specified by an index
-func (rw *Row) SetValue(Variable interface{}, FieldIndex string) {
+//SetValue - sets a struct item with a value from the row specified by an index
+func (rw *Row) SetValue(StructItem interface{}, FieldIndex string) {
 	fv := rw.ValueByName(&FieldIndex)
-	varbl := reflect.ValueOf(Variable).Elem() //Get the reflection value of the Variable to set value later
-	v := varbl.Interface()                    //convert back to interface type to allow type checking
+	varbl := reflect.ValueOf(StructItem).Elem() //Get the reflection value of the Variable to set value later
+	v := varbl.Interface()                      //convert back to interface type to allow type checking
 
 	switch t := v.(type) {
 	case int:

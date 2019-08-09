@@ -162,7 +162,19 @@ func TestRowAddingRange(t *testing.T) {
 }
 
 func TestRowSetValue(t *testing.T) {
+	var i int64
 
+	dtr := NewDataTable("RowsAffected")
+	dtr.AddColumn("Affected", reflect.TypeOf(i), 0, "int")
+	dtr.AddColumn("LastInsertId", reflect.TypeOf(i), 0, "int")
+
+	ra := 1
+	li := 123
+
+	r := dtr.NewRow()
+	r.SetValueByOrd(ra, 0)
+	r.SetValueByOrd(li, 1)
+	dtr.AddRow(&r)
 }
 
 func BenchmarkBulkRowAdding(b *testing.B) {
