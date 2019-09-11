@@ -1039,6 +1039,18 @@ func (rw *Row) ValueString(index string) string {
 	return ret.(string)
 }
 
+//ValuePtrString - return the value as pointer to string or nil if the value is null
+func (rw *Row) ValuePtrString(index string) *string {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(string)
+	return &pret
+}
+
 //ValueTime - return the value as time.Time or a default empty time.Time if the value is null
 func (rw *Row) ValueTime(index string) time.Time {
 	ret := rw.ValueByName(&index)
@@ -1048,6 +1060,18 @@ func (rw *Row) ValueTime(index string) time.Time {
 	}
 
 	return ret.(time.Time)
+}
+
+//ValuePtrTime - return the value as pointer to time.Time or nil if the value is null
+func (rw *Row) ValuePtrTime(index string) *time.Time {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(time.Time)
+	return &pret
 }
 
 //ValueBool - return the value as boolean or a false if the value is null
@@ -1061,6 +1085,18 @@ func (rw *Row) ValueBool(index string) bool {
 	return ret.(bool)
 }
 
+//ValuePtrBool - return the value as pointer to boolean or nil if the value is null
+func (rw *Row) ValuePtrBool(index string) *bool {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(bool)
+	return &pret
+}
+
 //ValueFloat64 - return the value as float64 or a 0 if the value is null
 func (rw *Row) ValueFloat64(index string) float64 {
 	ret := rw.ValueByName(&index)
@@ -1070,6 +1106,18 @@ func (rw *Row) ValueFloat64(index string) float64 {
 	}
 
 	return ret.(float64)
+}
+
+//ValuePtrFloat64 - return the value as pointer to float64 or a nil if the value is null
+func (rw *Row) ValuePtrFloat64(index string) *float64 {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(float64)
+	return &pret
 }
 
 //ValueFloat32 - return the value as float32 or a 0 if the value is null
@@ -1083,6 +1131,18 @@ func (rw *Row) ValueFloat32(index string) float32 {
 	return ret.(float32)
 }
 
+//ValuePtrFloat32 - return the value as pointer to float32 or a nil if the value is null
+func (rw *Row) ValuePtrFloat32(index string) *float32 {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(float32)
+	return &pret
+}
+
 //ValueInt - return the value as int or a 0 if the value is null
 func (rw *Row) ValueInt(index string) int {
 	ret := rw.ValueByName(&index)
@@ -1092,6 +1152,18 @@ func (rw *Row) ValueInt(index string) int {
 	}
 
 	return ret.(int)
+}
+
+//ValuePtrInt - return the value as pointer to int or a nil if the value is null
+func (rw *Row) ValuePtrInt(index string) *int {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(int)
+	return &pret
 }
 
 //ValueInt16 - return the value as int16 or a 0 if the value is null
@@ -1105,6 +1177,18 @@ func (rw *Row) ValueInt16(index string) int16 {
 	return ret.(int16)
 }
 
+//ValuePtrInt16 - return the value as pointer to int16 or a nil if the value is null
+func (rw *Row) ValuePtrInt16(index string) *int16 {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(int16)
+	return &pret
+}
+
 //ValueInt32 - return the value as int32 or a 0 if the value is null
 func (rw *Row) ValueInt32(index string) int32 {
 	ret := rw.ValueByName(&index)
@@ -1114,6 +1198,18 @@ func (rw *Row) ValueInt32(index string) int32 {
 	}
 
 	return ret.(int32)
+}
+
+//ValuePtrInt32 - return the value as pointer to int32 or a nil if the value is null
+func (rw *Row) ValuePtrInt32(index string) *int32 {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(int32)
+	return &pret
 }
 
 //ValueInt64 - return the value as int64 or a 0 if the value is null
@@ -1127,6 +1223,18 @@ func (rw *Row) ValueInt64(index string) int64 {
 	return ret.(int64)
 }
 
+//ValuePtrInt64 - return the value as pointer to int64 or a nil if the value is null
+func (rw *Row) ValuePtrInt64(index string) *int64 {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(int64)
+	return &pret
+}
+
 //ValueByte - return the value as byte or a 0 if the value is null
 func (rw *Row) ValueByte(index string) byte {
 	ret := rw.ValueByName(&index)
@@ -1136,6 +1244,18 @@ func (rw *Row) ValueByte(index string) byte {
 	}
 
 	return ret.(byte)
+}
+
+//ValuePtrByte - return the value as pointer to byte or a nil if the value is null
+func (rw *Row) ValuePtrByte(index string) *byte {
+	ret := rw.ValueByName(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(byte)
+	return &pret
 }
 
 //ValueStringOrd - return the value as string or a default empty string if the value is null by ordinal
@@ -1149,6 +1269,18 @@ func (rw *Row) ValueStringOrd(index int) string {
 	return ret.(string)
 }
 
+//ValuePtrStringOrd - return the value as pointer to string or nil if the value is null
+func (rw *Row) ValuePtrStringOrd(index int) *string {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(string)
+	return &pret
+}
+
 //ValueTimeOrd - return the value as time.Time or a default empty time.Time if the value is null by ordinal
 func (rw *Row) ValueTimeOrd(index int) time.Time {
 	ret := rw.ValueByOrdinal(&index)
@@ -1158,6 +1290,18 @@ func (rw *Row) ValueTimeOrd(index int) time.Time {
 	}
 
 	return ret.(time.Time)
+}
+
+//ValuePtrTimeOrd - return the value as pointer time.Time or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrTimeOrd(index int) *time.Time {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(time.Time)
+	return &pret
 }
 
 //ValueBoolOrd - return the value as boolean or a false if the value is null by ordinal
@@ -1171,6 +1315,18 @@ func (rw *Row) ValueBoolOrd(index int) bool {
 	return ret.(bool)
 }
 
+//ValuePtrBoolOrd - return the value as pointer to boolean or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrBoolOrd(index int) *bool {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(bool)
+	return &pret
+}
+
 //ValueFloat64Ord - return the value as float64 or a 0 if the value is null by ordinal
 func (rw *Row) ValueFloat64Ord(index int) float64 {
 	ret := rw.ValueByOrdinal(&index)
@@ -1180,6 +1336,18 @@ func (rw *Row) ValueFloat64Ord(index int) float64 {
 	}
 
 	return ret.(float64)
+}
+
+//ValuePtrFloat64Ord - return the value as pointer to float64 or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrFloat64Ord(index int) *float64 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(float64)
+	return &pret
 }
 
 //ValueFloat32Ord - return the value as float32 or a 0 if the value is null by ordinal
@@ -1193,6 +1361,18 @@ func (rw *Row) ValueFloat32Ord(index int) float32 {
 	return ret.(float32)
 }
 
+//ValuePtrFloat32Ord - return the value as pointer float32 or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrFloat32Ord(index int) *float32 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(float32)
+	return &pret
+}
+
 //ValueIntOrd - return the value as int or a 0 if the value is null by ordinal
 func (rw *Row) ValueIntOrd(index int) int {
 	ret := rw.ValueByOrdinal(&index)
@@ -1202,6 +1382,18 @@ func (rw *Row) ValueIntOrd(index int) int {
 	}
 
 	return ret.(int)
+}
+
+//ValuePtrIntOrd - return the value as pointer to int or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrIntOrd(index int) *int {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(int)
+	return &pret
 }
 
 //ValueInt16Ord - return the value as int16 or a 0 if the value is null by ordinal
@@ -1215,6 +1407,18 @@ func (rw *Row) ValueInt16Ord(index int) int16 {
 	return ret.(int16)
 }
 
+//ValuePtrInt16Ord - return the value as pointer to int16 or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrInt16Ord(index int) *int16 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(int16)
+	return &pret
+}
+
 //ValueInt32Ord - return the value as int32 or a 0 if the value is null by ordinal
 func (rw *Row) ValueInt32Ord(index int) int32 {
 	ret := rw.ValueByOrdinal(&index)
@@ -1224,6 +1428,18 @@ func (rw *Row) ValueInt32Ord(index int) int32 {
 	}
 
 	return ret.(int32)
+}
+
+//ValuePtrInt32Ord - return the value as pointer to int32 or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrInt32Ord(index int) *int32 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(int32)
+	return &pret
 }
 
 //ValueInt64Ord - return the value as int64 or a 0 if the value is null by ordinal
@@ -1237,6 +1453,18 @@ func (rw *Row) ValueInt64Ord(index int) int64 {
 	return ret.(int64)
 }
 
+//ValuePtrInt64Ord - return the value as pointer to int64 or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrInt64Ord(index int) *int64 {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(int64)
+	return &pret
+}
+
 //ValueByteOrd - return the value as byte or a 0 if the value is null by ordinal
 func (rw *Row) ValueByteOrd(index int) byte {
 	ret := rw.ValueByOrdinal(&index)
@@ -1246,4 +1474,16 @@ func (rw *Row) ValueByteOrd(index int) byte {
 	}
 
 	return ret.(byte)
+}
+
+//ValuePtrByteOrd - return the value as pointer to byte or a nil if the value is null by ordinal
+func (rw *Row) ValuePtrByteOrd(index int) *byte {
+	ret := rw.ValueByOrdinal(&index)
+
+	if ret == nil {
+		return nil
+	}
+
+	pret := ret.(byte)
+	return &pret
 }
