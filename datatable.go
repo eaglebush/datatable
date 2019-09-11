@@ -361,6 +361,10 @@ func (rw *Row) ValueByName(index *string) interface{} {
 			switch strings.ToUpper(c.DBColumnType) {
 			case "IMAGE":
 				return c.Value.([]uint8)
+			case "DECIMAL":
+				str := string(c.Value.([]uint8))
+				flt, _ := strconv.ParseFloat(str, 64)
+				return flt
 			default:
 				return string(c.Value.([]uint8))
 			}
