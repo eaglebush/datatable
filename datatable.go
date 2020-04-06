@@ -368,6 +368,8 @@ func (rw *Row) ValueByName(index *string) interface{} {
 			default:
 				return string(c.Value.([]uint8))
 			}
+		case "uint8":
+			return string(c.Value.(uint8))
 		}
 	}
 	return c.Value
