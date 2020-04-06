@@ -368,16 +368,12 @@ func (rw *Row) ValueByName(index *string) interface{} {
 			default:
 				return string(c.Value.([]uint8))
 			}
-		case "uint8":
-			return string(c.Value.(uint8))
-		case "int64":
-			return strconv.FormatInt(c.Value.(int64), 10)
 		}
 	}
 	return c.Value
 }
 
-//SetValueByOrd - sets a struct item with a value from the row specified by an index ordinal
+// SetValueByOrd - sets a struct item with a value from the row specified by an index ordinal
 func (rw *Row) SetValueByOrd(StructItem interface{}, FieldIndex int) {
 	fv := rw.ValueByOrdinal(&FieldIndex)
 	varbl := reflect.ValueOf(StructItem).Elem() //Get the reflection value of the Variable to set value later
