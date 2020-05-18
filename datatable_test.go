@@ -49,9 +49,9 @@ func TestRowGetValue(t *testing.T) {
 	dt := NewDataTable("Simon")
 
 	dt.AddColumns([]Column{
-		Column{Name: "ID", Type: reflect.TypeOf(0), Length: 0},
-		Column{Name: "Code", Type: reflect.TypeOf(""), Length: 12},
-		Column{Name: "Name", Type: reflect.TypeOf(""), Length: 15},
+		{Name: "ID", Type: reflect.TypeOf(0), Length: 0},
+		{Name: "Code", Type: reflect.TypeOf(""), Length: 12},
+		{Name: "Name", Type: reflect.TypeOf(""), Length: 15},
 	})
 
 	var r Row
@@ -118,9 +118,9 @@ func TestRowAddingRange(t *testing.T) {
 	dt := NewDataTable("Simon")
 
 	dt.AddColumns([]Column{
-		Column{Name: "ID", Type: reflect.TypeOf(0), Length: 0},
-		Column{Name: "Code", Type: reflect.TypeOf(""), Length: 12},
-		Column{Name: "Name", Type: reflect.TypeOf(""), Length: 15},
+		{Name: "ID", Type: reflect.TypeOf(0), Length: 0},
+		{Name: "Code", Type: reflect.TypeOf(""), Length: 12},
+		{Name: "Name", Type: reflect.TypeOf(""), Length: 15},
 	})
 
 	var r Row
@@ -181,9 +181,9 @@ func BenchmarkBulkRowAdding(b *testing.B) {
 	dt := NewDataTable("Simon")
 
 	dt.AddColumns([]Column{
-		Column{Name: "ID", Type: reflect.TypeOf(0), Length: 0},
-		Column{Name: "Code", Type: reflect.TypeOf(""), Length: 12},
-		Column{Name: "Name", Type: reflect.TypeOf(""), Length: 15},
+		{Name: "ID", Type: reflect.TypeOf(0), Length: 0},
+		{Name: "Code", Type: reflect.TypeOf(""), Length: 12},
+		{Name: "Name", Type: reflect.TypeOf(""), Length: 15},
 	})
 
 	var r Row
@@ -213,9 +213,9 @@ func BenchmarkBulkRowAddingRange(b *testing.B) {
 	dt := NewDataTable("Simon")
 
 	dt.AddColumns([]Column{
-		Column{Name: "ID", Type: reflect.TypeOf(0), Length: 0},
-		Column{Name: "Code", Type: reflect.TypeOf(""), Length: 12},
-		Column{Name: "Name", Type: reflect.TypeOf(""), Length: 15},
+		{Name: "ID", Type: reflect.TypeOf(0), Length: 0},
+		{Name: "Code", Type: reflect.TypeOf(""), Length: 12},
+		{Name: "Name", Type: reflect.TypeOf(""), Length: 15},
 	})
 
 	var r Row

@@ -1074,7 +1074,7 @@ func (rw *Row) ValuePtrTime(index string) *time.Time {
 	return &pret
 }
 
-//ValueBool - return the value as boolean or a false if the value is null
+// ValueBool - return the value as boolean or a false if the value is null
 func (rw *Row) ValueBool(index string) bool {
 	ret := rw.ValueByName(&index)
 
@@ -1082,7 +1082,13 @@ func (rw *Row) ValueBool(index string) bool {
 		return false
 	}
 
-	return ret.(bool)
+	// Many SQL database does not agree on boolean datatype. So, we just convert them to string and have them evaluate
+	s := anyToString(ret)
+	if s == "true" || s == "on" || s == "yes" || s == "1" || s == "-1" {
+		return true
+	}
+
+	return false
 }
 
 //ValuePtrBool - return the value as pointer to boolean or nil if the value is null
@@ -1093,7 +1099,15 @@ func (rw *Row) ValuePtrBool(index string) *bool {
 		return nil
 	}
 
-	pret := ret.(bool)
+	pret := false
+
+	// Many SQL database does not agree on boolean datatype. So, we just convert them to string and have them evaluate
+	s := anyToString(ret)
+	if s == "true" || s == "on" || s == "yes" || s == "1" || s == "-1" {
+		pret = true
+		return &pret
+	}
+
 	return &pret
 }
 
@@ -1486,4 +1500,54 @@ func (rw *Row) ValuePtrByteOrd(index int) *byte {
 
 	pret := ret.(byte)
 	return &pret
+}
+
+func anyToString(value interface{}) string {
+	var b string
+
+	switch value.(type) {
+	case string:
+		b = value.(string)
+	case int:
+		b = strconv.FormatInt(int64(value.(int)), 10)
+	case int8:
+		b = strconv.FormatInt(int64(value.(int8)), 10)
+	case int16:
+		b = strconv.FormatInt(int64(value.(int16)), 10)
+	case int32:
+		b = strconv.FormatInt(int64(value.(int32)), 10)
+	case int64:
+		b = strconv.FormatInt(value.(int64), 10)
+	case uint:
+		b = strconv.FormatUint(uint64(value.(uint)), 10)
+	case uint8:
+		b = strconv.FormatUint(uint64(value.(uint8)), 10)
+	case uint16:
+		b = strconv.FormatUint(uint64(value.(uint16)), 10)
+	case uint32:
+		b = strconv.FormatUint(uint64(value.(uint32)), 10)
+	case uint64:
+		b = strconv.FormatUint(uint64(value.(uint64)), 10)
+	case float32:
+		b = fmt.Sprintf("%f", value.(float32))
+	case float64:
+		b = fmt.Sprintf("%f", value.(float64))
+	case bool:
+		b = "false"
+		if value.(bool) {
+			b = "true"
+		} else {
+			s := strings.ToLower(value.(string))
+			if len(s) > 0 {
+				if s == "true" || s == "on" || s == "yes" || s == "1" || s == "-1" {
+					b = "true"
+				}
+			}
+		}
+
+	case time.Time:
+		b = "'" + value.(time.Time).Format(time.RFC3339) + "'"
+	}
+
+	return b
 }
