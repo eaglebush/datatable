@@ -1074,7 +1074,10 @@ func (rw *Row) ValuePtrTime(index string) *time.Time {
 	return &pret
 }
 
-// ValueBool - return the value as boolean or a false if the value is null
+// ValueBool - return the value as boolean or a false if the value is null.
+// This can also be used for columns that resembles a boolean value, and converting it to boolean.
+// Column values such as `true`, 'on', 'yes', '1' or 1 and -1 are converted to true value.
+// Anything else than these are converted to false
 func (rw *Row) ValueBool(index string) bool {
 	ret := rw.ValueByName(&index)
 
@@ -1091,7 +1094,10 @@ func (rw *Row) ValueBool(index string) bool {
 	return false
 }
 
-//ValuePtrBool - return the value as pointer to boolean or nil if the value is null
+// ValuePtrBool - return the value as pointer to boolean or nil if the value is null
+// This can also be used for columns that resembles a boolean value, and converting it to boolean.
+// Column values such as `true`, 'on', 'yes', '1' or 1 and -1 are converted to true value.
+// Anything else than these are converted to false
 func (rw *Row) ValuePtrBool(index string) *bool {
 	ret := rw.ValueByName(&index)
 
@@ -1105,7 +1111,6 @@ func (rw *Row) ValuePtrBool(index string) *bool {
 	s := anyToString(ret)
 	if s == "true" || s == "on" || s == "yes" || s == "1" || s == "-1" {
 		pret = true
-		return &pret
 	}
 
 	return &pret
@@ -1534,17 +1539,10 @@ func anyToString(value interface{}) string {
 		b = fmt.Sprintf("%f", value.(float64))
 	case bool:
 		b = "false"
-		if value.(bool) {
-			b = "true"
-		} else {
-			s := strings.ToLower(value.(string))
-			if len(s) > 0 {
-				if s == "true" || s == "on" || s == "yes" || s == "1" || s == "-1" {
-					b = "true"
-				}
-			}
+		t, ok := value.(bool)
+		if ok {
+			b = strconv.FormatBool(t)
 		}
-
 	case time.Time:
 		b = "'" + value.(time.Time).Format(time.RFC3339) + "'"
 	}
